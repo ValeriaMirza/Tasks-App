@@ -73,7 +73,7 @@ class TaskApp:
                 self.update_task_list()
                 self.task_entry.delete(0, tk.END)
                 self.date_entry.delete(0, tk.END)
-                send_email_gui(task)
+
             else:
                 messagebox.showerror("Database Error", "Failed to save task to the database.")
         else:
@@ -108,14 +108,4 @@ class TaskApp:
             self.task_listbox.insert(tk.END, str(task))
 
 
-def send_email_gui(task):
-    to_email = "valeriamirza5@gmail.com"  
-    subject = f"New task added: {task.description} "
-    content = f"Task: {task.description}\nDue Date: {task.due_date.strftime('%Y-%m-%d %H:%M')}"
-    #due_date = task.due_date.strftime('%Y-%m-%d %H:%M')
-    success, message = send_email(to_email, subject, content)
-    if success:
-        print("Email sent successfully")
-       
-    else:
-        print("Failed to send email:", message)
+
