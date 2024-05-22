@@ -53,6 +53,61 @@ def save_to_database(to_email, task, due_date):
         cursor.close()
         conn.close()
 
+def get_tasks_due_within_hour():
+    conn_str = f'DRIVER={driver};SERVER={server};DATABASE={db_name};Trusted_Connection=yes;'
+    try:
+        conn = pyodbc.connect(conn_str)
+        cursor = conn.cursor()
+        now = datetime.now()
+        one_hour_later = now + timedelta(hours=1)
+        print("Current Time:", now.strftime('%Y-%m-%d %H:%M'))
+        print("One Hour Later:", one_hour_later.strftime('%Y-%m-%d %H:%M'))
+
+        cursor.execute(f"""SELECT task_ID, to_email, task, due_date 
+                           FROM {table_name} 
+                           WHERE due_date BETWEEN ? AND ? 
+                           AND status <> 'completed' 
+                           AND (last_notified IS NULL OR last_notified < ?)""",
+                       (now, one_hour_later, now - timedelta(hours=1)))
+        tasks = cursor.fetchall()
+        return tasks
+    except Exception as e:
+        print(f"An error occurred while fetching due tasks: {str(e)}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def update_last_notified(task_id):
+    conn_str = f'DRIVER={driver};SERVER={server};DATABASE={db_name};Trusted_Connection=yes;'
+    try:
+        conn = pyodbc.connect(conn_str)
+        cursor = conn.cursor()
+        now = datetime.now()
+        cursor.execute(f"UPDATE {table_name} SET last_notified = ? WHERE task_ID = ?", (now, task_id))
+        conn.commit()
+        print(f"Updated last_notified for ID {task_id} to {now}")
+    except Exception as e:
+        print(f"An error occurred while updating last_notified: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
+def complete_task_in_database(task_id):
+    conn_str = f'DRIVER={driver};SERVER={server};DATABASE={db_name};Trusted_Connection=yes;'
+    try:
+        conn = pyodbc.connect(conn_str)
+        cursor = conn.cursor()
+        cursor.execute(f"UPDATE {table_name} SET status = 'completed' WHERE task_ID = ?", (task_id,))
+        conn.commit()
+        print(f"Task with ID {task_id} marked as completed in the database.")
+    except Exception as e:
+        print(f"An error occurred while marking task as completed: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
+
 def get_last_inserted_id():
     conn_str = f'DRIVER={driver};SERVER={server};DATABASE={db_name};Trusted_Connection=yes;'
     try:
@@ -81,22 +136,3 @@ def delete_task_from_database(task_id):
     finally:
         cursor.close()
         conn.close()
-
-def complete_task_in_database(task_id):
-    conn_str = f'DRIVER={driver};SERVER={server};DATABASE={db_name};Trusted_Connection=yes;'
-    try:
-        conn = pyodbc.connect(conn_str)
-        cursor = conn.cursor()
-        cursor.execute(f"UPDATE {table_name} SET status = 'completed' WHERE task_ID = ?", (task_id,))
-        conn.commit()
-        print(f"Task with ID {task_id} marked as completed in the database.")
-    except Exception as e:
-        print(f"An error occurred while marking task as completed: {str(e)}")
-    finally:
-        cursor.close()
-        conn.close()
-
-def update_last_notified():
-    pass
-def get_tasks_due_within_hour():
-    pass
