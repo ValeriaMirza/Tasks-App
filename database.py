@@ -95,3 +95,8 @@ def complete_task_in_database(task_id):
     finally:
         cursor.close()
         conn.close()
+
+def update_last_notified():
+    pass
+def get_tasks_due_within_hour():
+    pass
