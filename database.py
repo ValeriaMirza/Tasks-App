@@ -54,10 +54,44 @@ def save_to_database(to_email, task, due_date):
         conn.close()
 
 def get_last_inserted_id():
-    pass
+    conn_str = f'DRIVER={driver};SERVER={server};DATABASE={db_name};Trusted_Connection=yes;'
+    try:
+        conn = pyodbc.connect(conn_str)
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT MAX(task_ID) FROM {table_name}")
+        last_id = cursor.fetchone()[0]
+        return last_id
+    except Exception as e:
+        print(f"An error occurred while fetching the last inserted ID: {str(e)}")
+        return None
+    finally:
+        cursor.close()
+        conn.close()
 
-def delete_task_from_database():
-    pass
+def delete_task_from_database(task_id):
+    conn_str = f'DRIVER={driver};SERVER={server};DATABASE={db_name};Trusted_Connection=yes;'
+    try:
+        conn = pyodbc.connect(conn_str)
+        cursor = conn.cursor()
+        cursor.execute(f"DELETE FROM {table_name} WHERE task_ID = ?", (task_id,))
+        conn.commit()
+        print(f"Task with ID {task_id} deleted from the database.")
+    except Exception as e:
+        print(f"An error occurred while deleting task from database: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
 
-def complete_task_in_database():
-    pass
+def complete_task_in_database(task_id):
+    conn_str = f'DRIVER={driver};SERVER={server};DATABASE={db_name};Trusted_Connection=yes;'
+    try:
+        conn = pyodbc.connect(conn_str)
+        cursor = conn.cursor()
+        cursor.execute(f"UPDATE {table_name} SET status = 'completed' WHERE task_ID = ?", (task_id,))
+        conn.commit()
+        print(f"Task with ID {task_id} marked as completed in the database.")
+    except Exception as e:
+        print(f"An error occurred while marking task as completed: {str(e)}")
+    finally:
+        cursor.close()
+        conn.close()
