@@ -52,3 +52,12 @@ def save_to_database(to_email, task, due_date):
     finally:
         cursor.close()
         conn.close()
+
+def get_last_inserted_id():
+    pass
+
+def delete_task_from_database():
+    pass
+
+def complete_task_in_database():
+    pass

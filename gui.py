@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
+from database import save_to_database
+from database import complete_task_in_database
+from database import get_last_inserted_id
+from database import delete_task_from_database
 
 class Task:
     def __init__(self, id, description, due_date):
@@ -50,15 +54,59 @@ class TaskApp:
         self.delete_button.grid(row=4, column=1, pady=5)
 
     def add_task(self):
-        pass
+        description = self.task_entry.get()
+        due_date_str = self.date_entry.get()
+
+        try:
+            due_date = datetime.strptime(due_date_str, '%Y-%m-%d %H:%M')
+        except ValueError:
+            messagebox.showerror("Invalid date", "Please enter a valid date in YYYY-MM-DD HH:MM format")
+            return
+
+        if description and due_date_str:
+            success = save_to_database("valeriamirza5@gmail.com", description, due_date)
+            if success:
+                task_id = get_last_inserted_id()
+                task = Task(task_id, description, due_date)
+                self.tasks.append(task)
+                self.update_task_list()
+                self.task_entry.delete(0, tk.END)
+                self.date_entry.delete(0, tk.END)
+                
+            else:
+                messagebox.showerror("Database Error", "Failed to save task to the database.")
+        else:
+            messagebox.showerror("Missing information", "Please enter both task description and due date")
+
     def complete_task(self):
-        pass
+        selected_task_index = self.task_listbox.curselection()
+        if selected_task_index:
+            task = self.tasks[selected_task_index[0]]
+            task.completed = True
+            complete_task_in_database(task.id)
+            self.update_task_list()
+        else:
+            messagebox.showerror("No selection", "Please select a task to complete")
+
+
     def delete_task(self):
-        pass
+        selected_task_index = self.task_listbox.curselection()
+        if selected_task_index:
+            task = self.tasks[selected_task_index[0]]
+            task_id = task.id
+            del self.tasks[selected_task_index[0]]
+            self.update_task_list()
+            delete_task_from_database(task_id)
+        else:
+            messagebox.showerror("No selection", "Please select a task to delete")
+
+
     def update_task_list(self):
-        pass
-    def send_email_gui(task):
-        pass
+        self.task_listbox.delete(0, tk.END)
+        for task in self.tasks:
+            self.task_listbox.insert(tk.END, str(task))
+
+   
 
 
 root = tk.Tk()
