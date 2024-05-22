@@ -136,3 +136,4 @@ def delete_task_from_database(task_id):
     finally:
         cursor.close()
         conn.close()
+
