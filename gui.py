@@ -16,6 +16,8 @@ class Task:
         self.description = description
         self.due_date = due_date
         self.completed = False
+        
+
 
 
     def __str__(self):
@@ -24,6 +26,7 @@ class Task:
 class TaskApp:
     def __init__(self, root):
         self.root = root
+        self.url = "https://clockify.me/blog/managing-time/productive-things-to-do-when-bored/"
         self.root.title("Tasks App")
         self.root.geometry("550x450")
         self.root.configure(bg="#000000")
@@ -121,25 +124,25 @@ class TaskApp:
     def open_instagram(self):
         webbrowser.open("https://www.instagram.com/sigmo.ai/?igshid=YmMyMTA2M2Y%3D")
 
-    def show_idea(self):
 
+    def show_idea(self):
         try:
-            idea = self.fetch_random_task()
+            tasks = self.fetch_tasks(self.url)
+            random_task = random.choice(tasks)
+            idea = random_task.split('.', 1)[-1].strip()
             messagebox.showinfo("Random Idea", idea)
         except Exception as e:
             messagebox.showerror("Error", f"Failed to fetch random idea: {e}")
 
-    def fetch_random_task(self):
-        url = "https://clockify.me/blog/managing-time/productive-things-to-do-when-bored/"
+    def fetch_tasks(self, url):
         try:
             response = requests.get(url)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
-            tasks = soup.find_all('h3', class_='wp-block-heading')
-            random_task = random.choice(tasks)
-            task_text = random_task.text.strip()
-            task_after_point = task_text.split('.', 1)[-1].strip()
-            return task_after_point
+            tasks = soup.find_all('h3')
+            return [task.text.strip() for task in tasks]
         except Exception as e:
             raise e
+
+ 
 
