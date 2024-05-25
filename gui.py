@@ -6,6 +6,9 @@ from database import complete_task_in_database
 from database import get_last_inserted_id
 from database import delete_task_from_database
 import webbrowser
+import requests
+from bs4 import BeautifulSoup
+import random
 
 class Task:
     def __init__(self, id, description, due_date):
@@ -56,6 +59,9 @@ class TaskApp:
 
         self.instagram_button = tk.Button(self.frame, text="", command=self.open_instagram, bg="#000000", fg="#000000", borderwidth=0, cursor="hand2")
         self.instagram_button.place(relx=0, rely=1, anchor='sw', width=20, height=20)
+
+        self.ideas_button = tk.Button(self.frame, text="Ideas", command=self.show_idea, bg="#8F04BB", fg="white")
+        self.ideas_button.grid(row=4, column=0, columnspan=2, pady=5)
 
 
     def add_task(self):
@@ -114,4 +120,26 @@ class TaskApp:
 
     def open_instagram(self):
         webbrowser.open("https://www.instagram.com/sigmo.ai/?igshid=YmMyMTA2M2Y%3D")
+
+    def show_idea(self):
+
+        try:
+            idea = self.fetch_random_task()
+            messagebox.showinfo("Random Idea", idea)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to fetch random idea: {e}")
+
+    def fetch_random_task(self):
+        url = "https://clockify.me/blog/managing-time/productive-things-to-do-when-bored/"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+            tasks = soup.find_all('h3', class_='wp-block-heading')
+            random_task = random.choice(tasks)
+            task_text = random_task.text.strip()
+            task_after_point = task_text.split('.', 1)[-1].strip()
+            return task_after_point
+        except Exception as e:
+            raise e
 
