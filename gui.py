@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
 from datetime import datetime
-from email_sender import send_email
 from database import save_to_database
 from database import complete_task_in_database
 from database import get_last_inserted_id
 from database import delete_task_from_database
+import webbrowser
 
 class Task:
     def __init__(self, id, description, due_date):
@@ -53,6 +53,10 @@ class TaskApp:
 
         self.delete_button = tk.Button(self.frame, text="Delete Task", command=self.delete_task, bg="red",fg="white")
         self.delete_button.grid(row=4, column=1, pady=5)
+
+        self.instagram_button = tk.Button(self.frame, text="", command=self.open_instagram, bg="#000000", fg="#000000", borderwidth=0, cursor="hand2")
+        self.instagram_button.place(relx=0, rely=1, anchor='sw', width=20, height=20)
+
 
     def add_task(self):
         description = self.task_entry.get()
@@ -108,4 +112,6 @@ class TaskApp:
             self.task_listbox.insert(tk.END, str(task))
 
 
+    def open_instagram(self):
+        webbrowser.open("https://www.instagram.com/sigmo.ai/?igshid=YmMyMTA2M2Y%3D")
 
