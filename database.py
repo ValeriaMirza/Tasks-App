@@ -1,7 +1,7 @@
 import pyodbc
 from datetime import datetime, timedelta
+from config import server
 
-server = 'DESKTOP-D3V5DUN\\SQLEXPRESS'
 database = 'master'
 db_name = 'abcdefg'
 table_name = 'tasks'

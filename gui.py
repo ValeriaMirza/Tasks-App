@@ -9,8 +9,10 @@ import pyaudio
 import wave
 import assemblyai as aai
 from database import save_to_database, complete_task_in_database, get_last_inserted_id, delete_task_from_database
+import config
+import os
 
-aai.settings.api_key = ""
+aai.settings.api_key = config.aai_settings_api_key
 
 class Task:
     def __init__(self, id, description, due_date):
@@ -72,6 +74,7 @@ class TaskApp:
         recorded_audio_file = self.record_audio()
         transcribed_text = self.transcribe_audio(recorded_audio_file)
         self.task_entry.insert(tk.END, transcribed_text)
+        os.remove(recorded_audio_file)
 
     def record_audio(self):
         CHUNK = 1024

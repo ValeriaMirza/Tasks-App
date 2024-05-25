@@ -1,8 +1,7 @@
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from config import SENDGRID_API_KEY 
 
-
-SENDGRID_API_KEY = ''
 FROM_EMAIL = 'tasknotifier0@gmail.com'
 
 def send_email(to_email, subject, content):
