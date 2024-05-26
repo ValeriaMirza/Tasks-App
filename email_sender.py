@@ -1,8 +1,9 @@
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-from config import SENDGRID_API_KEY 
+from config import SENDGRID_API_KEY
 
 FROM_EMAIL = 'tasknotifier0@gmail.com'
+
 
 def send_email(to_email, subject, content):
     message = Mail(
@@ -19,6 +20,7 @@ def send_email(to_email, subject, content):
         if response.status_code == 202:
             return True, "Email accepted for delivery."
         else:
-            return False, f"Failed to send email. Status code: {response.status_code}"
+            return False, "Failed to send email." + \
+                          f"Status code: {response.status_code}"
     except Exception as e:
         return False, f"Error sending email: {e}"
