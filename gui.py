@@ -15,7 +15,7 @@ import os
 from config import user_email
 
 
-aai.settings.api_key = config.aai_settings_api_key
+aai.settings.api_key = config.AAI_SETTINGS_API_KEY
 
 
 class Task:
